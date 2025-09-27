@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "name": "customField",
+    "type": "text",
+    "defaultValue": "default",
+    "isRequired": false,
+    "id": 1
+  }
+]
