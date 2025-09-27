@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import Sidebar from "@/components/sidebar";
+import Sidebar from "@/components/sidebar/ㄴ";
 import type { SidebarState } from "@/components/sidebar";
 import Map from "@/components/Map";
 
