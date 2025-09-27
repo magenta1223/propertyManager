@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { RawProperty } from "@/models/types";
+import { Property } from "@/models/types";
 import fs from "fs/promises";
 import path from "path";
 
@@ -8,7 +8,7 @@ const propertiesFilePath = path.resolve(
     "src/data/properties.json"
 );
 
-async function getProperties(): Promise<RawProperty[]> {
+async function getProperties(): Promise<Property[]> {
     try {
         const data = await fs.readFile(propertiesFilePath, "utf-8");
         return JSON.parse(data);
@@ -25,7 +25,7 @@ async function getProperties(): Promise<RawProperty[]> {
     }
 }
 
-async function saveProperties(properties: RawProperty[]) {
+async function saveProperties(properties: Property[]) {
     await fs.writeFile(propertiesFilePath, JSON.stringify(properties, null, 2));
 }
 
@@ -48,7 +48,7 @@ export async function PUT(
     request: Request,
     { params }: { params: { id: string } }
 ) {
-    const updatedProperty: RawProperty = await request.json();
+    const updatedProperty: Property = await request.json();
     let properties = await getProperties();
     const index = properties.findIndex((p) => p.id === parseInt(params.id));
     if (index === -1) {
@@ -60,7 +60,6 @@ export async function PUT(
     properties[index] = {
         ...properties[index],
         ...updatedProperty,
-        toProperty: properties[index].toProperty, // preserve the method
     };
     await saveProperties(properties);
     return NextResponse.json(properties[index]);

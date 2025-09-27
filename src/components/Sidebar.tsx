@@ -1,11 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Property } from "@/models/types";
 
-type SidebarState = "collapsed" | "expanded" | "full-screen";
+export type SidebarState = "collapsed" | "expanded" | "full-screen";
 
-export default function Sidebar() {
-    const [state, setState] = useState<SidebarState>("collapsed");
+interface SidebarProps {
+    state: SidebarState;
+    setState: React.Dispatch<React.SetStateAction<SidebarState>>;
+}
+
+export default function Sidebar({ state, setState }: SidebarProps) {
+    const [properties, setProperties] = useState<Property[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (state === "full-screen") {
+            setLoading(true);
+            fetch("/api/properties")
+                .then((res) => res.json())
+                .then((data) => {
+                    setProperties(data);
+                    setLoading(false);
+                })
+                .catch(() => {
+                    setLoading(false);
+                    // Handle error appropriately
+                });
+        }
+    }, [state]);
 
     const handleToggleExpand = () => {
         setState((prevState) =>
@@ -19,18 +42,56 @@ export default function Sidebar() {
 
     if (state === "full-screen") {
         return (
-            <div className="fixed inset-0 bg-gray-100 z-50 p-4">
+            <div className="fixed inset-0 bg-white z-50 p-4 overflow-auto">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold">Properties</h2>
+                    <h2 className="text-2xl font-bold">Properties</h2>
                     <button
                         onClick={() => setState("expanded")}
-                        className="p-2"
+                        className="p-2 bg-gray-200 hover:bg-gray-300 rounded-lg"
                     >
                         Exit Full Screen
                     </button>
                 </div>
-                {/* Full-screen content goes here */}
-                <p>Full-screen Property Cards Grid View</p>
+                {loading ? (
+                    <p>Loading properties...</p>
+                ) : (
+                    <div className="w-full">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        ID
+                                    </th>
+                                    {properties[0]?.fields.map((field) => (
+                                        <th
+                                            key={field.id}
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {field.name}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {properties.map((prop) => (
+                                    <tr key={prop.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            {prop.id}
+                                        </td>
+                                        {prop.fields.map((field) => (
+                                            <td
+                                                key={field.id}
+                                                className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                            >
+                                                {String(field.value)}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         );
     }
