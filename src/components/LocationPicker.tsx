@@ -23,6 +23,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
 }) => {
     const mapRef = useRef<HTMLDivElement | null>(null);
     const markerRef = useRef<any>(null);
+    const mapInstanceRef = useRef<any>(null);
     const [scriptLoaded, setScriptLoaded] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -68,6 +69,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             ? new naver.maps.LatLng(value.y, value.x)
             : new naver.maps.LatLng(37.5665, 126.978); // Seoul
         const map = new naver.maps.Map(mapRef.current, { center, zoom: 13 });
+        mapInstanceRef.current = map;
         if (value) {
             markerRef.current = new naver.maps.Marker({
                 position: center,
@@ -86,7 +88,30 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             }
             onSelect({ x: _lng, y: _lat });
         });
-    }, [scriptLoaded, value, onSelect]);
+    }, [scriptLoaded]);
+
+    // Respond to external value changes (recenter & move marker)
+    useEffect(() => {
+        if (!scriptLoaded) return;
+        const naver = (window as any).naver;
+        if (!naver?.maps || !mapInstanceRef.current) return;
+        if (
+            value &&
+            typeof value.x === "number" &&
+            typeof value.y === "number"
+        ) {
+            const latLng = new naver.maps.LatLng(value.y, value.x);
+            mapInstanceRef.current.setCenter(latLng);
+            if (!markerRef.current) {
+                markerRef.current = new naver.maps.Marker({
+                    position: latLng,
+                    map: mapInstanceRef.current,
+                });
+            } else {
+                markerRef.current.setPosition(latLng);
+            }
+        }
+    }, [value, scriptLoaded]);
 
     return (
         <div className={`flex flex-col gap-3 ${className}`}>
