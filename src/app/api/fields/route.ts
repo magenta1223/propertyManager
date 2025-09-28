@@ -28,7 +28,14 @@ async function saveFields(fields: Field[]) {
 
 export async function GET() {
     const fields = await getFields();
-    return NextResponse.json(fields);
+    // Ensure stable ordering (ascending by order then id)
+    const sorted = [...fields].sort((a, b) => {
+        const ao = a.order ?? Number.MAX_SAFE_INTEGER;
+        const bo = b.order ?? Number.MAX_SAFE_INTEGER;
+        if (ao !== bo) return ao - bo;
+        return a.id - b.id;
+    });
+    return NextResponse.json(sorted);
 }
 
 export async function POST(request: Request) {
@@ -36,6 +43,15 @@ export async function POST(request: Request) {
     const fields = await getFields();
     newField.id =
         fields.length > 0 ? Math.max(...fields.map((f) => f.id)) + 1 : 1;
+    // Assign order if missing: next available sequential
+    if (newField.order === undefined) {
+        const maxOrder = fields.reduce(
+            (max, f) =>
+                f.order !== undefined && f.order > max ? f.order : max,
+            -1
+        );
+        newField.order = maxOrder + 1;
+    }
     fields.push(newField);
     await saveFields(fields);
     return NextResponse.json(newField, { status: 201 });

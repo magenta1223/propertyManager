@@ -55,6 +55,7 @@ export async function PUT(
         );
     }
     fields[index] = { ...fields[index], ...updatedField };
+    // Persist updated list; client may request reordering by sending order values
     await saveFields(fields);
     return NextResponse.json(fields[index]);
 }

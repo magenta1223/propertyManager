@@ -1,1 +1,268 @@
-[]
+[
+  {
+    "id": 1,
+    "fields": [
+      {
+        "name": "주택명",
+        "type": "text",
+        "defaultValue": "주택명을 입력해주세요",
+        "isRequired": true,
+        "id": 4,
+        "order": 0,
+        "value": "송파 더 "
+      },
+      {
+        "name": "주소",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 5,
+        "order": 1,
+        "value": "송파구 송파동 106-3",
+        "label": "송파구 송파동 106-3"
+      },
+      {
+        "name": "링크",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 6,
+        "order": 2,
+        "value": "https://zippoom.com/review/4FRY2iY4KdngSrZGI7-EXg"
+      },
+      {
+        "name": "가격",
+        "type": "number",
+        "defaultValue": "0",
+        "isRequired": false,
+        "id": 7,
+        "order": 3,
+        "value": "3.5"
+      },
+      {
+        "name": "입주 가능 연월",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 8,
+        "order": 4,
+        "value": "2026-08-20"
+      },
+      {
+        "name": "입주 시점 협의 가능",
+        "type": "boolean",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 9,
+        "order": 5,
+        "value": false
+      },
+      {
+        "name": "전용 면적",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 10,
+        "order": 6,
+        "value": "8.48"
+      },
+      {
+        "name": "Location",
+        "type": "location",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 11,
+        "order": 7,
+        "value": "127.0744737,37.4775046"
+      },
+      {
+        "name": "인접 셔틀버스 승차장",
+        "type": "location",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 12,
+        "order": 8,
+        "value": "126.9922479,37.5579727"
+      },
+      {
+        "name": "거리",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 13,
+        "order": 9,
+        "value": "0.68",
+        "label": "0.68"
+      },
+      {
+        "name": "층",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 14,
+        "order": 10,
+        "value": "5",
+        "label": "5"
+      },
+      {
+        "name": "EV",
+        "type": "boolean",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 15,
+        "order": 11,
+        "value": true
+      },
+      {
+        "name": "주차 대수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 16,
+        "order": 12,
+        "value": "7"
+      },
+      {
+        "name": "세대 수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 17,
+        "order": 13,
+        "value": "9"
+      },
+      {
+        "name": "준공연월",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 18,
+        "order": 14,
+        "value": ""
+      },
+      {
+        "name": "전세가",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 19,
+        "order": 15,
+        "value": ""
+      },
+      {
+        "name": "전세가 기준일",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 20,
+        "order": 16,
+        "value": ""
+      },
+      {
+        "name": "KB부동산가격",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 21,
+        "order": 17,
+        "value": ""
+      },
+      {
+        "name": "관리비",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 22,
+        "order": 18,
+        "value": "8"
+      },
+      {
+        "name": "방 개수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 23,
+        "order": 19,
+        "value": ""
+      },
+      {
+        "name": "화장실 개수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 24,
+        "order": 20,
+        "value": ""
+      },
+      {
+        "name": "승민 한 줄 평",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 25,
+        "order": 21,
+        "value": ""
+      },
+      {
+        "name": "공인중개사명",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 26,
+        "order": 22,
+        "value": ""
+      },
+      {
+        "name": "연락처",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 27,
+        "order": 23,
+        "value": ""
+      },
+      {
+        "name": "매물번호",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 28,
+        "order": 24,
+        "value": ""
+      },
+      {
+        "name": "사진",
+        "type": "image",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 29,
+        "order": 25,
+        "value": ""
+      },
+      {
+        "name": "customField",
+        "type": "text",
+        "defaultValue": "default",
+        "isRequired": false,
+        "id": 1,
+        "value": "default"
+      },
+      {
+        "name": "customField2",
+        "type": "text",
+        "defaultValue": "custom2",
+        "isRequired": false,
+        "id": 2,
+        "value": "custom2"
+      },
+      {
+        "name": "feild3",
+        "type": "text",
+        "defaultValue": "aa",
+        "isRequired": false,
+        "id": 3,
+        "value": "aa"
+      }
+    ]
+  }
+]
