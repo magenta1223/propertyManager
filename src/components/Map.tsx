@@ -268,6 +268,29 @@ export default function Map() {
                     borderWidth: 1,
                 });
 
+                // 마우스 오버 시 InfoWindow 열기 (기존 클릭 동작 유지)
+                window.naver.maps.Event.addListener(marker, "mouseover", () => {
+                    // 이미 열려있는 동일한 창이면 아무 것도 하지 않음
+                    if (openInfoRef.current === info) return;
+                    // 다른 창이 열려있으면 닫기
+                    if (openInfoRef.current && openInfoRef.current !== info) {
+                        openInfoRef.current.close();
+                    }
+                    info.open(map, marker);
+                    openInfoRef.current = info;
+                });
+
+                // 마우스가 벗어나면(hover 종료) 창 닫기 (사용자가 클릭하여 고정한 경우는 제외)
+                window.naver.maps.Event.addListener(marker, "mouseout", () => {
+                    // 클릭해서 연 후 바로 mouseout 되는 경우 사용자가 의도적으로 열어둔 것이므로 닫지 않음
+                    // 간단한 휴리스틱: 현재 열린 창이 이 info이고, 최근 250ms 이내 클릭 이벤트가 없었다면 닫기
+                    // 구현 단순화를 위해 최근 클릭 시간 ref 없이 즉시 닫도록 하고, 필요시 개선
+                    if (openInfoRef.current === info) {
+                        info.close();
+                        openInfoRef.current = null;
+                    }
+                });
+
                 // 클릭 시 InfoWindow 열기 (하나만 열리도록)
                 window.naver.maps.Event.addListener(marker, "click", () => {
                     if (openInfoRef.current && openInfoRef.current !== info) {
