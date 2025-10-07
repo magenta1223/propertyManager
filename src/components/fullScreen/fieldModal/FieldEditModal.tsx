@@ -34,6 +34,22 @@ const FieldEditModal: React.FC<FieldEditModalProps> = ({
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Group
+                        </label>
+                        <input
+                            className="w-full px-3 py-2 border rounded-md"
+                            value={fieldForm.group || editingField.group || ""}
+                            onChange={(e) =>
+                                setFieldForm({
+                                    ...fieldForm,
+                                    group: e.target.value || "unknown",
+                                })
+                            }
+                            placeholder="예) 기본정보, 위치, 비용 (미입력시 unknown)"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                             Unit (Optional)
                         </label>
                         <input

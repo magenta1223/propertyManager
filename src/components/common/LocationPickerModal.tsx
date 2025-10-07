@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { Field } from "@/models/types";
+import { loadNaverMaps } from "@/lib/loadNaverMaps";
 
 interface LocationPickerModalProps {
     open: boolean;
@@ -40,7 +41,7 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
 }) => {
     const LocationPicker = useMemo(
         () =>
-            dynamic(() => import("@/components/LocationPicker"), {
+            dynamic(() => import("@/components/common/LocationPicker"), {
                 ssr: false,
             }),
         []
@@ -56,17 +57,39 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
         setSearching(true);
         setSearchError(null);
         setResolvedAddresses([]);
+
         try {
+            // 1. 외부 검색 훅 우선 (제공된 경우)
+            if (onSearchAddress) {
+                const ext = await onSearchAddress(searchTerm.trim());
+                if (ext) {
+                    onChangeValue({ x: ext.x, y: ext.y });
+                    if (ext.label) onChangeLabel(ext.label);
+                    if (ext.label) setResolvedAddresses([ext.label]);
+                    return;
+                }
+            }
+
+            // 2. 내부 geocoder (lazy load 보장)
+            await loadNaverMaps({ submodules: ["geocoder"] });
+            const w: any = window as any;
+            const naverObj = w.naver;
+            if (!naverObj?.maps?.Service) {
+                setSearchError("지오코딩 모듈을 사용할 수 없습니다.");
+                return;
+            }
             await new Promise<void>((resolve) => {
-                naver.maps.Service.geocode(
+                naverObj.maps.Service.geocode(
                     { query: searchTerm.trim() },
                     (status: any, response: any) => {
-                        if (status === naver.maps.Service.Status.ERROR) {
+                        if (status === naverObj.maps.Service.Status.ERROR) {
                             setSearchError("주소를 찾을 수 없습니다.");
                             return resolve();
                         }
                         if (response.v2.meta.totalCount === 0) {
-                            setSearchError("주소를 찾을 수 없습니다.");
+                            setSearchError(
+                                "주소를 찾을 수 없습니다: 0 results"
+                            );
                             return resolve();
                         }
                         const item = response.v2.addresses[0];

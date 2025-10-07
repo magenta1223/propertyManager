@@ -41,6 +41,20 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
     -   Add Property: 새 매물 생성 모달
     -   Add Field: 새 필드 정의 추가
     -   Exit Full Screen: 사이드바 뷰로 복귀
+    -   Filter Reset: 모든 컬럼 필터 초기화
+
+### 컬럼 필터링 (Filtering)
+
+테이블 헤더 아래 2번째 줄에 필터 UI 가 생성됩니다. 필드 타입에 따라 입력 형태가 다릅니다.
+
+| 타입                                      | UI 형태                    | 동작                                                                               |
+| ----------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------- |
+| ID (내부) / TEXT / URL / IMAGE / LOCATION | 단일 텍스트 인풋           | 부분 문자열(contains) 매칭 (대소문자 구분 없음)                                    |
+| NUMBER                                    | min / max 두 개 인풋       | min 이상 AND max 이하 범위 필터 (빈 값은 무시)                                     |
+| DATE                                      | from / to 두 개 date 인풋  | from 이상 AND to 이하 범위. 값이 `YYYY-MM` 인 경우 자동으로 `-01` 로 패딩하여 비교 |
+| BOOLEAN                                   | 드롭다운 (전체/True/False) | 선택 값과 동일한 boolean 만 표시                                                   |
+
+복수 컬럼 필터는 AND 조건으로 결합됩니다. 필터 초기화 버튼(필터 초기화)을 눌러 모든 필터를 제거할 수 있습니다.
 
 ## LOCATION / 지도 보기
 

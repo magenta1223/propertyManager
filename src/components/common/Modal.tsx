@@ -15,7 +15,16 @@ interface ModalProps {
     actionsClassName?: string; // extra actions classes
     showClose?: boolean; // show top-right X
     hideActions?: boolean; // hide footer buttons
+    size?: "sm" | "md" | "lg" | "xl" | "2xl"; // preset width sizes
 }
+
+const sizeToMax: Record<NonNullable<ModalProps["size"]>, string> = {
+    sm: "max-w-sm",
+    md: "max-w-md",
+    lg: "max-w-lg",
+    xl: "max-w-xl",
+    "2xl": "max-w-2xl",
+};
 
 const Modal: React.FC<ModalProps> = ({
     open,
@@ -32,6 +41,7 @@ const Modal: React.FC<ModalProps> = ({
     actionsClassName = "",
     showClose = true,
     hideActions = false,
+    size = "md",
 }) => {
     const handleDismiss = useCallback(() => {
         if (onDismiss) onDismiss();
@@ -60,7 +70,10 @@ const Modal: React.FC<ModalProps> = ({
         >
             <div className="absolute inset-0 bg-black/30" />
             <div
-                className={`relative bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl p-6 animate-scale-in ${className}`}
+                className={`relative bg-white w-full ${
+                    // if user supplies a custom max-w-* in className, don't append preset
+                    /max-w-\w+/g.test(className) ? "" : sizeToMax[size]
+                } mx-4 rounded-lg shadow-2xl p-6 animate-scale-in ${className}`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {(title || showClose) && (

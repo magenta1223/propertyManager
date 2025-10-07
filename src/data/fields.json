@@ -1,231 +1,209 @@
 [
-  {
-    "name": "customField",
-    "type": "text",
-    "defaultValue": "default",
-    "isRequired": false,
-    "id": 1
-  },
-  {
-    "name": "customField2",
-    "type": "text",
-    "defaultValue": "custom2",
-    "isRequired": false,
-    "id": 2
-  },
-  {
-    "name": "feild3",
-    "type": "text",
-    "defaultValue": "aa",
-    "isRequired": false,
-    "id": 3
-  },
-  {
-    "name": "주택명",
-    "type": "text",
-    "defaultValue": "주택명을 입력해주세요",
-    "isRequired": true,
-    "id": 4,
-    "order": 0
-  },
-  {
-    "name": "주소",
-    "type": "text",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 5,
-    "order": 1
-  },
-  {
-    "name": "링크",
-    "type": "text",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 6,
-    "order": 2
-  },
-  {
-    "name": "가격",
-    "type": "number",
-    "defaultValue": "0",
-    "isRequired": false,
-    "id": 7,
-    "order": 3
-  },
-  {
-    "name": "입주 가능 연월",
-    "type": "date",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 8,
-    "order": 4
-  },
-  {
-    "name": "입주 시점 협의 가능",
-    "type": "boolean",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 9,
-    "order": 5
-  },
-  {
-    "name": "전용 면적",
-    "type": "number",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 10,
-    "order": 6
-  },
-  {
-    "name": "Location",
-    "type": "location",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 11,
-    "order": 7
-  },
-  {
-    "name": "인접 셔틀버스 승차장",
-    "type": "location",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 12,
-    "order": 8
-  },
-  {
-    "name": "거리",
-    "type": "number",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 13,
-    "order": 9
-  },
-  {
-    "name": "층",
-    "type": "number",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 14,
-    "order": 10
-  },
-  {
-    "name": "EV",
-    "type": "boolean",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 15,
-    "order": 11
-  },
-  {
-    "name": "주차 대수",
-    "type": "number",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 16,
-    "order": 12
-  },
-  {
-    "name": "세대 수",
-    "type": "number",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 17,
-    "order": 13
-  },
-  {
-    "name": "준공연월",
-    "type": "date",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 18,
-    "order": 14
-  },
-  {
-    "name": "전세가",
-    "type": "number",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 19,
-    "order": 15
-  },
-  {
-    "name": "전세가 기준일",
-    "type": "date",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 20,
-    "order": 16
-  },
-  {
-    "name": "KB부동산가격",
-    "type": "number",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 21,
-    "order": 17
-  },
-  {
-    "name": "관리비",
-    "type": "number",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 22,
-    "order": 18
-  },
-  {
-    "name": "방 개수",
-    "type": "number",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 23,
-    "order": 19
-  },
-  {
-    "name": "화장실 개수",
-    "type": "number",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 24,
-    "order": 20
-  },
-  {
-    "name": "승민 한 줄 평",
-    "type": "text",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 25,
-    "order": 21
-  },
-  {
-    "name": "공인중개사명",
-    "type": "text",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 26,
-    "order": 22
-  },
-  {
-    "name": "연락처",
-    "type": "text",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 27,
-    "order": 23
-  },
-  {
-    "name": "매물번호",
-    "type": "text",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 28,
-    "order": 24
-  },
-  {
-    "name": "사진",
-    "type": "image",
-    "defaultValue": "",
-    "isRequired": false,
-    "id": 29,
-    "order": 25
-  }
+    {
+        "name": "주택명",
+        "type": "text",
+        "defaultValue": "주택명을 입력해주세요",
+        "isRequired": true,
+        "id": 4,
+        "order": 0,
+        "group": "기본정보"
+    },
+    {
+        "name": "링크",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 6,
+        "order": 4,
+        "group": "기본정보"
+    },
+    {
+        "name": "가격",
+        "type": "number",
+        "defaultValue": "0",
+        "isRequired": false,
+        "id": 7,
+        "order": 1,
+        "group": "가격"
+    },
+    {
+        "name": "입주 가능 연월",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 8,
+        "order": 2,
+        "group": "가격"
+    },
+    {
+        "name": "입주 시점 협의 가능",
+        "type": "boolean",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 9,
+        "order": 3,
+        "group": "가격"
+    },
+    {
+        "name": "전용 면적",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 10,
+        "order": 5,
+        "group": "시설"
+    },
+    {
+        "name": "Location",
+        "type": "location",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 11,
+        "order": 6,
+        "group": "위치"
+    },
+    {
+        "name": "인접 셔틀버스 승차장",
+        "type": "location",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 12,
+        "order": 7,
+        "group": "위치"
+    },
+    {
+        "name": "거리",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 13,
+        "order": 8,
+        "group": "위치"
+    },
+    {
+        "name": "층",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 14,
+        "order": 9,
+        "group": "시설"
+    },
+    {
+        "name": "EV",
+        "type": "boolean",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 15,
+        "order": 10,
+        "group": "시설"
+    },
+    {
+        "name": "주차 대수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 16,
+        "order": 11,
+        "group": "시설"
+    },
+    {
+        "name": "세대 수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 17,
+        "order": 12,
+        "group": "시설"
+    },
+    {
+        "name": "준공연월",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 18,
+        "order": 13,
+        "group": "시설"
+    },
+    {
+        "name": "전세가",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 19,
+        "order": 14,
+        "group": "가격"
+    },
+    {
+        "name": "전세가 기준일",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 20,
+        "order": 15,
+        "group": "가격"
+    },
+    {
+        "name": "KB부동산가격",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 21,
+        "order": 16,
+        "group": "가격"
+    },
+    {
+        "name": "방 개수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 23,
+        "order": 18,
+        "group": "시설"
+    },
+    {
+        "name": "승민 한 줄 평",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 25,
+        "order": 20,
+        "group": "기타"
+    },
+    {
+        "name": "공인중개사명",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 26,
+        "order": 21,
+        "group": "연락"
+    },
+    {
+        "name": "연락처",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 27,
+        "order": 22,
+        "group": "연락"
+    },
+    {
+        "name": "매물번호",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 28,
+        "order": 23,
+        "group": "연락"
+    },
+    {
+        "name": "사진",
+        "type": "image",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 29,
+        "order": 24,
+        "group": "기타"
+    }
 ]

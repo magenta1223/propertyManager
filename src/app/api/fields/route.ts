@@ -40,6 +40,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
     const newField: Field = await request.json();
+    if (!newField.group) newField.group = "unknown";
     const fields = await getFields();
     newField.id =
         fields.length > 0 ? Math.max(...fields.map((f) => f.id)) + 1 : 1;

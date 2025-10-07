@@ -43,7 +43,7 @@ const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
     const [locationTarget, setLocationTarget] = useState<Field | null>(null);
     const LocationPicker = useMemo(
         () =>
-            dynamic(() => import("@/components/LocationPicker"), {
+            dynamic(() => import("@/components/common/LocationPicker"), {
                 ssr: false,
             }),
         []
@@ -221,6 +221,7 @@ const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                 onSave={handleSubmit}
                 saveText={submitting ? "Saving..." : "생성"}
                 saveDisabled={submitting}
+                size="2xl"
             >
                 <div className="max-h-[60vh] overflow-y-auto pr-1 space-y-4">
                     {sorted.map((f) => {

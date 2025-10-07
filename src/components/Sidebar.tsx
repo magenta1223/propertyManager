@@ -2,9 +2,14 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Property } from "@/models/types";
-import FullScreenView from "./sidebar/FullScreenView";
+import FullScreenView from "@/components/fullScreen/FullScreenView";
+import CardViewFullScreen from "@/components/fullScreen/CardViewFullScreen";
 
-export type SidebarState = "collapsed" | "expanded" | "full-screen";
+export type SidebarState =
+    | "collapsed"
+    | "expanded"
+    | "full-screen" // 표(Table) 전체 화면
+    | "card-view"; // 카드 뷰 전체 화면
 
 interface SidebarProps {
     state: SidebarState;
@@ -15,6 +20,7 @@ export default function Sidebar({ state, setState }: SidebarProps) {
     const [properties, setProperties] = useState<Property[]>([]);
     const [loading, setLoading] = useState(true);
     const isFullScreen = state === "full-screen";
+    const isCardView = state === "card-view";
     // staged full-screen transition flags
     const [pendingFull, setPendingFull] = useState(false); // user clicked but not yet expanded fully
     const [animatingToFull, setAnimatingToFull] = useState(false); // width animation to 100vw in progress
@@ -27,7 +33,7 @@ export default function Sidebar({ state, setState }: SidebarProps) {
     const exitShrinkTimeoutRef = useRef<number | null>(null);
 
     useEffect(() => {
-        if (isFullScreen) {
+        if (isFullScreen || isCardView) {
             setLoading(true);
             fetch("/api/properties")
                 .then((res) => res.json())
@@ -37,7 +43,7 @@ export default function Sidebar({ state, setState }: SidebarProps) {
                 })
                 .catch(() => setLoading(false));
         }
-    }, [isFullScreen]);
+    }, [isFullScreen, isCardView]);
 
     const containerWidthClass = useMemo(() => {
         if (shrinkingFromFull) return "w-screen"; // initial frame of shrink (next frame sets to expanded width)
@@ -137,6 +143,22 @@ export default function Sidebar({ state, setState }: SidebarProps) {
         );
     }
 
+    if (isCardView) {
+        // 현재 card view 는 table view 와 달리 애니메이션 없이 바로 full screen 컴포넌트 렌더
+        return (
+            <CardViewFullScreen
+                onSetState={(next) => {
+                    // card-view -> expanded 로 복귀
+                    if (next === "expanded") {
+                        setState("expanded");
+                    } else {
+                        setState(next);
+                    }
+                }}
+            />
+        );
+    }
+
     return (
         <aside
             className={`group relative flex flex-col bg-gray-100 border-r border-gray-200 h-full ${containerWidthClass} transition-all motion-safe:duration-300 motion-safe:ease-in-out motion-reduce:transition-none ${
@@ -180,9 +202,16 @@ export default function Sidebar({ state, setState }: SidebarProps) {
                     <button
                         onClick={startFullScreenTransition}
                         className="w-full text-left px-2 py-2 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors motion-reduce:transition-none"
-                        aria-label="Open properties in full screen"
+                        aria-label="Open properties in full screen table view"
                     >
-                        Full Screen View
+                        Table View
+                    </button>
+                    <button
+                        onClick={() => setState("card-view")}
+                        className="w-full text-left px-2 py-2 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors motion-reduce:transition-none"
+                        aria-label="Open properties card view"
+                    >
+                        Card View
                     </button>
                     <div className="text-gray-500">Property list...</div>
                 </div>

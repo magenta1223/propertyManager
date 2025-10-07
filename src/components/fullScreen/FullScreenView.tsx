@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Property, Field, FieldType } from "@/models/types";
 import AddPropertyModal from "@/components/AddPropertyModal";
 import { SidebarState } from "../Sidebar";
 import { ToastContainer } from "@/components/common/Toast";
 import PropertyTable from "./PropertyTable";
-import FieldAddModal from "./FieldAddModal";
-import FieldEditModal from "./FieldEditModal";
-import FieldDeleteConfirmModal from "./FieldDeleteConfirmModal";
+import FieldAddModal from "./fieldModal/FieldAddModal";
+import FieldEditModal from "./fieldModal/FieldEditModal";
+import FieldDeleteConfirmModal from "./fieldModal/FieldDeleteConfirmModal";
 import FullScreenButtonBar from "./FullScreenButtonBar";
-import LocationPickerModal from "./LocationPickerModal";
+import LocationPickerModal from "@/components/common/LocationPickerModal";
 
 interface FullScreenViewProps {
     onSetState: (state: SidebarState) => void;
@@ -29,6 +29,7 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
         defaultValue: "",
         isRequired: false,
         unit: "",
+        group: "unknown",
     });
     const [allFields, setAllFields] = useState<Field[]>([]);
     const [showSuccess, setShowSuccess] = useState(false); // legacy single success toast (will be replaced)
@@ -46,6 +47,108 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
         propertyId: number;
         field: Field;
     }>(null);
+    // Filters state: key = fieldId | "__id__"
+    const [filters, setFilters] = useState<Record<string | number, any>>({});
+    const textDebounceRef = useRef<number | null>(null);
+
+    const handleChangeFilter = (
+        fieldId: number | "__id__",
+        patch: Record<string, any>
+    ) => {
+        setFilters((prev) => ({
+            ...prev,
+            [fieldId]: { ...prev[fieldId], ...patch },
+        }));
+    };
+    const resetFilters = () => setFilters({});
+
+    // Derived filtered property list
+    const filteredProperties = useMemo(() => {
+        if (!Object.keys(filters).length) return propertyList;
+        return propertyList.filter((prop) => {
+            // iterate all active filters
+            for (const key of Object.keys(filters)) {
+                const fConf = filters[key];
+                if (!fConf) continue;
+                if (key === "__id__") {
+                    if (fConf.contains) {
+                        const idStr = String(prop.id);
+                        if (!idStr.includes(fConf.contains.trim()))
+                            return false;
+                    }
+                    continue;
+                }
+                const fieldId = Number(key);
+                const pField = prop.fields.find((pf) => pf.id === fieldId);
+                const fieldMeta = allFields.find((f) => f.id === fieldId);
+                const rawVal: any = pField?.value ?? "";
+                const type = fieldMeta?.type;
+                if (!fieldMeta) continue;
+                if (
+                    type === FieldType.TEXT ||
+                    type === FieldType.URL ||
+                    type === FieldType.IMAGE ||
+                    type === FieldType.LOCATION
+                ) {
+                    if (fConf.contains) {
+                        const txt = (pField?.label || rawVal || "")
+                            .toString()
+                            .toLowerCase();
+                        if (!txt.includes(fConf.contains.toLowerCase().trim()))
+                            return false;
+                    }
+                } else if (type === FieldType.NUMBER) {
+                    const num =
+                        rawVal === "" || rawVal == null
+                            ? NaN
+                            : Number(String(rawVal).replace(/,/g, ""));
+                    if (fConf.min !== undefined && fConf.min !== "") {
+                        if (isNaN(num) || num < Number(fConf.min)) return false;
+                    }
+                    if (fConf.max !== undefined && fConf.max !== "") {
+                        if (isNaN(num) || num > Number(fConf.max)) return false;
+                    }
+                } else if (type === FieldType.DATE) {
+                    if (fConf.from || fConf.to) {
+                        // Accept YYYY-MM or YYYY-MM-DD inputs in data
+                        const valueStr = (rawVal || "").toString();
+                        if (valueStr) {
+                            // Normalise to YYYY-MM-DD by padding missing day with -01
+                            const norm =
+                                valueStr.length === 7
+                                    ? `${valueStr}-01`
+                                    : valueStr;
+                            const time = Date.parse(norm);
+                            if (!isNaN(time)) {
+                                if (fConf.from) {
+                                    const fFrom = Date.parse(fConf.from);
+                                    if (!isNaN(fFrom) && time < fFrom)
+                                        return false;
+                                }
+                                if (fConf.to) {
+                                    const fTo = Date.parse(fConf.to);
+                                    if (!isNaN(fTo) && time > fTo) return false;
+                                }
+                            } else {
+                                // if value cannot parse, treat as failing the filter
+                                return false;
+                            }
+                        } else {
+                            // empty value does not satisfy range filter
+                            return false;
+                        }
+                    }
+                } else if (type === FieldType.BOOLEAN) {
+                    if (fConf.bool) {
+                        const boolVal = rawVal === true || rawVal === "true";
+                        if (fConf.bool === "true" && !boolVal) return false;
+                        if (fConf.bool === "false" && boolVal) return false;
+                    }
+                }
+            }
+            return true;
+        });
+    }, [filters, propertyList, allFields]);
 
     // (dynamic LocationPicker now handled inside LocationPickerModal)
 
@@ -98,10 +201,9 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
                 // LOCATION에서 label이 없으면 value 사용
                 if (!finalLabel) finalLabel = finalValue;
             } else {
-                // label == value 인 경우만(=동일) 별도 저장 의미 없음 -> label 제거 or 동기화
-                if (finalLabel === undefined || finalLabel === "") {
-                    finalLabel = finalValue != null ? String(finalValue) : "";
-                }
+                // LOCATION 외 필드는 항상 label == value 로 강제 동기화하여 즉시 UI 반영
+                // (label 값이 남아 이전 값이 보이는 문제 방지)
+                finalLabel = finalValue != null ? String(finalValue) : "";
             }
             const updatedFields = target.fields.map((f) =>
                 f.id === fieldId
@@ -179,16 +281,21 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
     };
     const handleDrop = async (e: React.DragEvent, targetFieldId: number) => {
         e.preventDefault();
-        if (draggingFieldId == null || draggingFieldId === targetFieldId)
+        if (draggingFieldId == null || draggingFieldId === targetFieldId) {
+            setDraggingFieldId(null);
             return;
+        }
         const current = [...sortedFields];
         const fromIdx = current.findIndex((f) => f.id === draggingFieldId);
         const toIdx = current.findIndex((f) => f.id === targetFieldId);
-        if (fromIdx === -1 || toIdx === -1) return;
+        if (fromIdx === -1 || toIdx === -1) {
+            setDraggingFieldId(null);
+            return;
+        }
         const [moved] = current.splice(fromIdx, 1);
         current.splice(toIdx, 0, moved);
-        // Reassign order sequentially
         const reassigned = current.map((f, i) => ({ ...f, order: i }));
+        // Optimistic UI
         setAllFields(reassigned);
         setDraggingFieldId(null);
         addToast({
@@ -196,27 +303,38 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
             variant: "info",
             duration: 1500,
         });
-        // Persist each field order (could be optimized with batch route)
-        await Promise.all(
-            reassigned.map((f) =>
-                fetch(`/api/fields/${f.id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ order: f.order }),
-                })
-            )
-        ).catch(() =>
+        try {
+            const res = await fetch("/api/fields/reorder", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    orderedIds: reassigned.map((f) => f.id),
+                }),
+            });
+            if (!res.ok) throw new Error(`status ${res.status}`);
+            const serverFields: Field[] = await res.json();
+            setAllFields(serverFields);
             addToast({
-                message: "순서 저장 실패",
+                message: "필드 순서가 업데이트되었습니다.",
+                variant: "success",
+                duration: 2000,
+            });
+        } catch (err) {
+            // Fallback: revert or attempt individual updates? For now just notify and refetch.
+            addToast({
+                message: "순서 저장 실패 - 다시 시도해주세요",
                 variant: "error",
                 duration: 3000,
-            })
-        );
-        addToast({
-            message: "필드 순서가 업데이트되었습니다.",
-            variant: "success",
-            duration: 2000,
-        });
+            });
+            // Refetch to sync
+            try {
+                const ref = await fetch("/api/fields");
+                if (ref.ok) {
+                    const data: Field[] = await ref.json();
+                    setAllFields(data);
+                }
+            } catch {}
+        }
     };
     const [toasts, setToasts] = useState<
         {
@@ -292,6 +410,7 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
                     defaultValue: "",
                     isRequired: false,
                     unit: "",
+                    group: "unknown",
                 });
                 setShowAddFieldModal(false);
             } else {
@@ -404,6 +523,7 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
             defaultValue: "",
             isRequired: false,
             unit: "",
+            group: "unknown",
         });
     };
 
@@ -431,12 +551,15 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
             ) : (
                 <div className="w-full">
                     <PropertyTable
-                        properties={propertyList}
+                        properties={filteredProperties}
                         fields={sortedFields}
                         editingCell={editingCell}
                         editingValue={editingValue}
                         editingLabel={editingLabel}
                         draggingFieldId={draggingFieldId}
+                        filters={filters}
+                        onChangeFilter={handleChangeFilter}
+                        onResetFilters={resetFilters}
                         onStartEdit={startEdit}
                         onEditingValueChange={setEditingValue}
                         onEditingLabelChange={setEditingLabel}

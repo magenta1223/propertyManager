@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { Field } from "@/models/types";
 import fs from "fs/promises";
 import path from "path";
@@ -27,11 +27,12 @@ async function saveFields(fields: Field[]) {
 }
 
 export async function GET(
-    request: Request,
-    { params }: { params: { id: string } }
+    _request: NextRequest,
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await context.params;
     const fields = await getFields();
-    const field = fields.find((f) => f.id === parseInt(params.id));
+    const field = fields.find((f) => f.id === parseInt(id));
     if (!field) {
         return NextResponse.json(
             { message: "Field not found" },
@@ -42,12 +43,14 @@ export async function GET(
 }
 
 export async function PUT(
-    request: Request,
-    { params }: { params: { id: string } }
+    request: NextRequest,
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await context.params;
     const updatedField: Field = await request.json();
+    if (!updatedField.group) updatedField.group = "unknown";
     let fields = await getFields();
-    const index = fields.findIndex((f) => f.id === parseInt(params.id));
+    const index = fields.findIndex((f) => f.id === parseInt(id));
     if (index === -1) {
         return NextResponse.json(
             { message: "Field not found" },
@@ -61,11 +64,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-    request: Request,
-    { params }: { params: { id: string } }
+    _request: NextRequest,
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await context.params;
     let fields = await getFields();
-    const filteredFields = fields.filter((f) => f.id !== parseInt(params.id));
+    const filteredFields = fields.filter((f) => f.id !== parseInt(id));
     if (fields.length === filteredFields.length) {
         return NextResponse.json(
             { message: "Field not found" },

@@ -37,7 +37,8 @@
         "isRequired": false,
         "id": 7,
         "order": 3,
-        "value": "3.5"
+        "value": "3.45",
+        "label": "3.45"
       },
       {
         "name": "입주 가능 연월",
@@ -64,7 +65,8 @@
         "isRequired": false,
         "id": 10,
         "order": 6,
-        "value": "8.48"
+        "value": "8.48",
+        "label": "8.48"
       },
       {
         "name": "Location",
@@ -73,8 +75,8 @@
         "isRequired": false,
         "id": 11,
         "order": 7,
-        "value": "127.0744737,37.4775046",
-        "label": "송파구 송파동 106-3"
+        "value": "127.1120798,37.5039608",
+        "label": "송파동 106-3"
       },
       {
         "name": "인접 셔틀버스 승차장",
@@ -83,7 +85,8 @@
         "isRequired": false,
         "id": 12,
         "order": 8,
-        "value": "126.9922479,37.5579727"
+        "value": "127.1120031,37.4993436",
+        "label": "송파역"
       },
       {
         "name": "거리",
@@ -263,6 +266,771 @@
         "isRequired": false,
         "id": 3,
         "value": "aa"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "fields": [
+      {
+        "name": "주택명",
+        "type": "text",
+        "defaultValue": "주택명을 입력해주세요",
+        "isRequired": true,
+        "id": 4,
+        "order": 0,
+        "value": "주택명을 입력해주세요ㅁㅁㅁ",
+        "label": "주택명을 입력해주세요ㅁㅁㅁ"
+      },
+      {
+        "name": "링크",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 6,
+        "order": 2,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "가격",
+        "type": "number",
+        "defaultValue": "0",
+        "isRequired": false,
+        "id": 7,
+        "order": 3,
+        "value": "0",
+        "label": "0"
+      },
+      {
+        "name": "입주 가능 연월",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 8,
+        "order": 4,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "입주 시점 협의 가능",
+        "type": "boolean",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 9,
+        "order": 5,
+        "value": false,
+        "label": false
+      },
+      {
+        "name": "전용 면적",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 10,
+        "order": 6,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "Location",
+        "type": "location",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 11,
+        "order": 7,
+        "value": "127.1116166,37.503287",
+        "label": "서울특별시 송파구 가락로21길 4-5 그린하우스"
+      },
+      {
+        "name": "인접 셔틀버스 승차장",
+        "type": "location",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 12,
+        "order": 8,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "거리",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 13,
+        "order": 9,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "층",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 14,
+        "order": 10,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "EV",
+        "type": "boolean",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 15,
+        "order": 11,
+        "value": false,
+        "label": false
+      },
+      {
+        "name": "주차 대수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 16,
+        "order": 12,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "세대 수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 17,
+        "order": 13,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "준공연월",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 18,
+        "order": 14,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "전세가",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 19,
+        "order": 15,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "전세가 기준일",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 20,
+        "order": 16,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "KB부동산가격",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 21,
+        "order": 17,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "관리비",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 22,
+        "order": 18,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "방 개수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 23,
+        "order": 19,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "화장실 개수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 24,
+        "order": 20,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "승민 한 줄 평",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 25,
+        "order": 21,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "공인중개사명",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 26,
+        "order": 22,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "연락처",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 27,
+        "order": 23,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "매물번호",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 28,
+        "order": 24,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "사진",
+        "type": "image",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 29,
+        "order": 25,
+        "value": "https://landthumb-phinf.pstatic.net/20250910_37/1757467726681HPvwS_JPEG/KakaoTalk_20250709_111139959_01.jpg?type=m1024",
+        "label": "https://landthumb-phinf.pstatic.net/20250910_37/1757467726681HPvwS_JPEG/KakaoTalk_20250709_111139959_01.jpg?type=m1024"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "fields": [
+      {
+        "name": "주택명",
+        "type": "text",
+        "defaultValue": "주택명을 입력해주세요",
+        "isRequired": true,
+        "id": 4,
+        "order": 0,
+        "value": "그린하우스 A동",
+        "label": "그린하우스 A동"
+      },
+      {
+        "name": "링크",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 6,
+        "order": 2,
+        "value": "https://land.naver.com/info/articleGallery.naver?startImage=Y&atclNo=2551878083&isGroupArticle=N&imageId=2551878083@20250924153008801129",
+        "label": "https://land.naver.com/info/articleGallery.naver?startImage=Y&atclNo=2551878083&isGroupArticle=N&imageId=2551878083@20250924153008801129"
+      },
+      {
+        "name": "가격",
+        "type": "number",
+        "defaultValue": "0",
+        "isRequired": false,
+        "id": 7,
+        "order": 3,
+        "value": "4",
+        "label": "0"
+      },
+      {
+        "name": "입주 가능 연월",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 8,
+        "order": 4,
+        "value": "2027-02",
+        "label": "2026-03"
+      },
+      {
+        "name": "입주 시점 협의 가능",
+        "type": "boolean",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 9,
+        "order": 5,
+        "value": "true",
+        "label": "false"
+      },
+      {
+        "name": "전용 면적",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 10,
+        "order": 6,
+        "value": "10",
+        "label": "12"
+      },
+      {
+        "name": "Location",
+        "type": "location",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 11,
+        "order": 7,
+        "value": "127.1116166,37.503287",
+        "label": "서울특별시 송파구 가락로21길 4-5 그린하우스"
+      },
+      {
+        "name": "인접 셔틀버스 승차장",
+        "type": "location",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 12,
+        "order": 8,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "거리",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 13,
+        "order": 9,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "층",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 14,
+        "order": 10,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "EV",
+        "type": "boolean",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 15,
+        "order": 11,
+        "value": false,
+        "label": false
+      },
+      {
+        "name": "주차 대수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 16,
+        "order": 12,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "세대 수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 17,
+        "order": 13,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "준공연월",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 18,
+        "order": 14,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "전세가",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 19,
+        "order": 15,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "전세가 기준일",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 20,
+        "order": 16,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "KB부동산가격",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 21,
+        "order": 17,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "관리비",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 22,
+        "order": 18,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "방 개수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 23,
+        "order": 19,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "화장실 개수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 24,
+        "order": 20,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "승민 한 줄 평",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 25,
+        "order": 21,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "공인중개사명",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 26,
+        "order": 22,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "연락처",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 27,
+        "order": 23,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "매물번호",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 28,
+        "order": 24,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "사진",
+        "type": "image",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 29,
+        "order": 25,
+        "value": "",
+        "label": ""
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "fields": [
+      {
+        "name": "주택명",
+        "type": "text",
+        "defaultValue": "주택명을 입력해주세요",
+        "isRequired": true,
+        "id": 4,
+        "order": 0,
+        "value": "그린하우스 A동",
+        "label": "그린하우스 A동"
+      },
+      {
+        "name": "링크",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 6,
+        "order": 2,
+        "value": "https://land.naver.com/info/articleGallery.naver?startImage=Y&atclNo=2551878083&isGroupArticle=N&imageId=2551878083@20250924153008801129",
+        "label": "https://land.naver.com/info/articleGallery.naver?startImage=Y&atclNo=2551878083&isGroupArticle=N&imageId=2551878083@20250924153008801129"
+      },
+      {
+        "name": "가격",
+        "type": "number",
+        "defaultValue": "0",
+        "isRequired": false,
+        "id": 7,
+        "order": 3,
+        "value": "4.0",
+        "label": "4.0"
+      },
+      {
+        "name": "입주 가능 연월",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 8,
+        "order": 4,
+        "value": "2027-02-01",
+        "label": "2027-02-01"
+      },
+      {
+        "name": "입주 시점 협의 가능",
+        "type": "boolean",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 9,
+        "order": 5,
+        "value": true,
+        "label": true
+      },
+      {
+        "name": "전용 면적",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 10,
+        "order": 6,
+        "value": "12",
+        "label": "12"
+      },
+      {
+        "name": "Location",
+        "type": "location",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 11,
+        "order": 7,
+        "value": "127.1116166,37.503287",
+        "label": "송파동 94-12 그린하우스"
+      },
+      {
+        "name": "인접 셔틀버스 승차장",
+        "type": "location",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 12,
+        "order": 8,
+        "value": "",
+        "label": "송파역 4번출구"
+      },
+      {
+        "name": "거리",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 13,
+        "order": 9,
+        "value": "0.62",
+        "label": "0.62"
+      },
+      {
+        "name": "층",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 14,
+        "order": 10,
+        "value": "2",
+        "label": "2"
+      },
+      {
+        "name": "EV",
+        "type": "boolean",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 15,
+        "order": 11,
+        "value": true,
+        "label": true
+      },
+      {
+        "name": "주차 대수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 16,
+        "order": 12,
+        "value": "1",
+        "label": "1"
+      },
+      {
+        "name": "세대 수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 17,
+        "order": 13,
+        "value": "5",
+        "label": "5"
+      },
+      {
+        "name": "준공연월",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 18,
+        "order": 14,
+        "value": "2019-03-01",
+        "label": "2019-03-01"
+      },
+      {
+        "name": "전세가",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 19,
+        "order": 15,
+        "value": "3",
+        "label": "3"
+      },
+      {
+        "name": "전세가 기준일",
+        "type": "date",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 20,
+        "order": 16,
+        "value": "2025-02-01",
+        "label": "2025-02-01"
+      },
+      {
+        "name": "KB부동산가격",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 21,
+        "order": 17,
+        "value": "3.74",
+        "label": "3.74"
+      },
+      {
+        "name": "관리비",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 22,
+        "order": 18,
+        "value": "5",
+        "label": "5"
+      },
+      {
+        "name": "방 개수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 23,
+        "order": 19,
+        "value": "2",
+        "label": "2"
+      },
+      {
+        "name": "화장실 개수",
+        "type": "number",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 24,
+        "order": 20,
+        "value": "1",
+        "label": "1"
+      },
+      {
+        "name": "승민 한 줄 평",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 25,
+        "order": 21,
+        "value": "좋음",
+        "label": "좋음"
+      },
+      {
+        "name": "공인중개사명",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 26,
+        "order": 22,
+        "value": "여러 곳",
+        "label": "여러 곳"
+      },
+      {
+        "name": "연락처",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 27,
+        "order": 23,
+        "value": "010",
+        "label": "010"
+      },
+      {
+        "name": "매물번호",
+        "type": "text",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 28,
+        "order": 24,
+        "value": "",
+        "label": ""
+      },
+      {
+        "name": "사진",
+        "type": "image",
+        "defaultValue": "",
+        "isRequired": false,
+        "id": 29,
+        "order": 25,
+        "value": "",
+        "label": ""
       }
     ]
   }

@@ -16,6 +16,7 @@ export interface Field {
     isRequired: boolean;
     order?: number; // ordering index (ascending)
     unit?: string; // optional unit string to append when displaying (e.g. 억 원, m²)
+    group?: string; // logical grouping label (e.g. 기본정보, 비용, 위치). Default: 'unknown'
 }
 
 export interface PropertyField extends Field {
