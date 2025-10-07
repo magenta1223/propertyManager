@@ -213,6 +213,13 @@ export default function Sidebar({ state, setState }: SidebarProps) {
                     >
                         Card View
                     </button>
+                    <a
+                        href="/shuttle-stops"
+                        className="w-full block px-2 py-2 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors motion-reduce:transition-none"
+                        aria-label="Manage shuttle stops"
+                    >
+                        Shuttle Stops
+                    </a>
                     <div className="text-gray-500">Property list...</div>
                 </div>
                 {state === "collapsed" && (

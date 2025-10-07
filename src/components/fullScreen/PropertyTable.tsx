@@ -1,5 +1,5 @@
-import React from "react";
-import { Property, Field, FieldType } from "@/models/types";
+import React, { useEffect, useState } from "react";
+import { Property, Field, FieldType, ShuttleStop } from "@/models/types";
 
 interface PropertyTableProps {
     properties: Property[];
@@ -16,6 +16,12 @@ interface PropertyTableProps {
     ) => void;
     onResetFilters: () => void;
     onStartEdit: (
+        propertyId: number,
+        fieldId: number,
+        currentValue: any,
+        currentLabel?: string
+    ) => void;
+    onOpenMapPicker: (
         propertyId: number,
         fieldId: number,
         currentValue: any,
@@ -61,7 +67,40 @@ const PropertyTable: React.FC<PropertyTableProps> = ({
     onDrop,
     openEditField,
     confirmDeleteField,
+    onOpenMapPicker,
 }) => {
+    // Shuttle stop master data (lazy loaded only if needed)
+    const [shuttleStops, setShuttleStops] = useState<ShuttleStop[]>([]);
+    const [shuttleStopsLoaded, setShuttleStopsLoaded] = useState(false);
+
+    // Load shuttle stops when a LOCATION field named '인접 셔틀버스 승차장' enters edit mode
+    useEffect(() => {
+        if (!editingCell) return;
+        const [propIdStr, fieldIdStr] = editingCell.split(":");
+        const fieldId = Number(fieldIdStr);
+        const fieldMeta = fields.find((f) => f.id === fieldId);
+        if (
+            fieldMeta &&
+            fieldMeta.type === FieldType.LOCATION &&
+            fieldMeta.name === "인접 셔틀버스 승차장" &&
+            !shuttleStopsLoaded
+        ) {
+            (async () => {
+                try {
+                    const res = await fetch("/api/shuttle-stops");
+                    if (res.ok) {
+                        const data: ShuttleStop[] = await res.json();
+                        setShuttleStops(data);
+                    }
+                } catch (e) {
+                    console.warn("Failed to load shuttle stops", e);
+                } finally {
+                    setShuttleStopsLoaded(true);
+                }
+            })();
+        }
+    }, [editingCell, fields, shuttleStopsLoaded]);
+
     return (
         <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -277,38 +316,158 @@ const PropertyTable: React.FC<PropertyTableProps> = ({
                                         {isEditing ? (
                                             field.type ===
                                             FieldType.LOCATION ? (
-                                                <div className="flex flex-col gap-1">
-                                                    <button
-                                                        className="px-2 py-1 border rounded bg-blue-50 text-blue-600 text-xs"
-                                                        onClick={() =>
-                                                            onStartEdit(
-                                                                prop.id,
-                                                                field.id,
-                                                                value,
-                                                                cellData?.label
-                                                            )
-                                                        }
-                                                    >
-                                                        좌표 재선택
-                                                    </button>
-                                                    <input
-                                                        className="w-full px-2 py-1 border border-blue-400 rounded text-gray-900 text-xs"
-                                                        placeholder="주소/레이블"
-                                                        value={editingLabel}
-                                                        onChange={(e) =>
-                                                            onEditingLabelChange(
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                        onKeyDown={(e) =>
-                                                            onKeyDown(
-                                                                e,
-                                                                prop.id,
-                                                                field.id
-                                                            )
-                                                        }
-                                                    />
-                                                </div>
+                                                field.name ===
+                                                "인접 셔틀버스 승차장" ? (
+                                                    <div className="flex flex-col gap-1">
+                                                        <select
+                                                            autoFocus
+                                                            className="w-full px-2 py-1 border border-blue-400 rounded text-gray-900 text-xs bg-white"
+                                                            value={(() => {
+                                                                if (
+                                                                    editingValue &&
+                                                                    typeof editingValue ===
+                                                                        "object" &&
+                                                                    "x" in
+                                                                        editingValue &&
+                                                                    "y" in
+                                                                        editingValue
+                                                                ) {
+                                                                    return `${editingValue.x},${editingValue.y}`;
+                                                                }
+                                                                if (
+                                                                    typeof editingValue ===
+                                                                        "string" &&
+                                                                    editingValue.includes(
+                                                                        ","
+                                                                    )
+                                                                ) {
+                                                                    return editingValue;
+                                                                }
+                                                                return "";
+                                                            })()}
+                                                            onChange={(e) => {
+                                                                const val =
+                                                                    e.target
+                                                                        .value; // "x,y"
+                                                                if (!val) {
+                                                                    onEditingValueChange(
+                                                                        {
+                                                                            x: "",
+                                                                            y: "",
+                                                                        }
+                                                                    );
+                                                                    onEditingLabelChange(
+                                                                        ""
+                                                                    );
+                                                                    return;
+                                                                }
+                                                                const [x, y] =
+                                                                    val.split(
+                                                                        ","
+                                                                    );
+                                                                const stop =
+                                                                    shuttleStops.find(
+                                                                        (s) =>
+                                                                            `${s.coords.x},${s.coords.y}` ===
+                                                                            val
+                                                                    );
+                                                                onEditingValueChange(
+                                                                    { x, y }
+                                                                );
+                                                                onEditingLabelChange(
+                                                                    stop?.label ||
+                                                                        stop?.name ||
+                                                                        val
+                                                                );
+                                                            }}
+                                                            onKeyDown={(e) =>
+                                                                onKeyDown(
+                                                                    e,
+                                                                    prop.id,
+                                                                    field.id
+                                                                )
+                                                            }
+                                                        >
+                                                            <option value="">
+                                                                셔틀 정류장 선택
+                                                            </option>
+                                                            {shuttleStops.map(
+                                                                (s) => (
+                                                                    <option
+                                                                        key={
+                                                                            s.id
+                                                                        }
+                                                                        value={`${s.coords.x},${s.coords.y}`}
+                                                                    >
+                                                                        {s.label ||
+                                                                            s.name}
+                                                                    </option>
+                                                                )
+                                                            )}
+                                                        </select>
+                                                        <div className="flex gap-1">
+                                                            <button
+                                                                className="flex-1 px-2 py-1 border rounded text-xs bg-green-50 text-green-600 hover:bg-green-100"
+                                                                onClick={() =>
+                                                                    onPersist(
+                                                                        prop.id,
+                                                                        field.id
+                                                                    )
+                                                                }
+                                                            >
+                                                                저장
+                                                            </button>
+                                                            <button
+                                                                className="flex-1 px-2 py-1 border rounded text-xs bg-gray-50 hover:bg-gray-100"
+                                                                onClick={() =>
+                                                                    onOpenMapPicker(
+                                                                        prop.id,
+                                                                        field.id,
+                                                                        value,
+                                                                        cellData?.label
+                                                                    )
+                                                                }
+                                                                title="지도에서 좌표 선택"
+                                                            >
+                                                                지도 선택
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col gap-1">
+                                                        <button
+                                                            className="px-2 py-1 border rounded bg-blue-50 text-blue-600 text-xs"
+                                                            onClick={() =>
+                                                                onStartEdit(
+                                                                    prop.id,
+                                                                    field.id,
+                                                                    value,
+                                                                    cellData?.label
+                                                                )
+                                                            }
+                                                        >
+                                                            좌표 재선택
+                                                        </button>
+                                                        <input
+                                                            className="w-full px-2 py-1 border border-blue-400 rounded text-gray-900 text-xs"
+                                                            placeholder="주소/레이블"
+                                                            value={editingLabel}
+                                                            onChange={(e) =>
+                                                                onEditingLabelChange(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            onKeyDown={(e) =>
+                                                                onKeyDown(
+                                                                    e,
+                                                                    prop.id,
+                                                                    field.id
+                                                                )
+                                                            }
+                                                        />
+                                                    </div>
+                                                )
                                             ) : (
                                                 <input
                                                     autoFocus

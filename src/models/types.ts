@@ -28,3 +28,11 @@ export interface Property {
     id: number;
     fields: PropertyField[];
 }
+
+// Shuttle bus stop data structure (separate master data list)
+export interface ShuttleStop {
+    id: number;
+    name: string; // short name (e.g. station name)
+    label: string; // display label / description
+    coords: { x: number; y: number }; // x: longitude, y: latitude
+}

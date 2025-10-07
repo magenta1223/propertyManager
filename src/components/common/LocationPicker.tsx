@@ -56,7 +56,10 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
         script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
         script.setAttribute("data-naver-maps", "true");
         script.onload = () => setScriptLoaded(true);
-        script.onerror = () => setError("네이버 지도 스크립트 로드 실패");
+        script.onerror = () =>
+            setError(
+                "네이버 지도 스크립트 로드 실패 (키 혹은 도메인 인증 문제 가능)"
+            );
         document.head.appendChild(script);
     }, []);
 
@@ -115,7 +118,22 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
 
     return (
         <div className={`flex flex-col gap-3 ${className}`}>
-            {error && <p className="text-xs text-red-500">{error}</p>}
+            {error && (
+                <div className="text-[11px] text-red-500 space-y-1">
+                    <p>{error}</p>
+                    <ul className="list-disc pl-4 space-y-0.5">
+                        <li>환경변수 NEXT_PUBLIC_NAVER_MAP_CLIENT_ID 확인</li>
+                        <li>Naver Cloud 플랫폼 - Maps 서비스 활성화 여부</li>
+                        <li>API Key 유형 (Client ID) 사용 여부</li>
+                        <li>
+                            도메인/서브도메인 허용 리스트에 현재 호스트 추가
+                        </li>
+                        <li>
+                            로컬 개발 시 http://localhost 또는 127.0.0.1 등록
+                        </li>
+                    </ul>
+                </div>
+            )}
             {!error && !scriptLoaded && (
                 <p className="text-xs text-gray-400">지도 스크립트 로딩중...</p>
             )}

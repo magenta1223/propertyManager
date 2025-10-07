@@ -1,7 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Field, FieldType, Property, PropertyField } from "@/models/types";
+import {
+    Field,
+    FieldType,
+    Property,
+    PropertyField,
+    ShuttleStop,
+} from "@/models/types";
 import Modal from "@/components/common/Modal";
-import dynamic from "next/dynamic";
+import LocationPickerModal from "@/components/common/LocationPickerModal";
 
 interface AddPropertyModalProps {
     open: boolean;
@@ -41,13 +47,9 @@ const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
         HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
     >(null);
     const [locationTarget, setLocationTarget] = useState<Field | null>(null);
-    const LocationPicker = useMemo(
-        () =>
-            dynamic(() => import("@/components/common/LocationPicker"), {
-                ssr: false,
-            }),
-        []
-    );
+    const [shuttleStops, setShuttleStops] = useState<ShuttleStop[]>([]);
+    const [loadingStops, setLoadingStops] = useState(false);
+    // Removed direct inline LocationPicker usage in favor of shared LocationPickerModal
 
     useEffect(() => {
         if (open) {
@@ -64,6 +66,21 @@ const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
             setValues(initValues);
             setLabels(initLabels);
             setErrors({});
+            // fetch shuttle stops once when opening
+            (async () => {
+                try {
+                    setLoadingStops(true);
+                    const res = await fetch("/api/shuttle-stops");
+                    if (res.ok) {
+                        const data = await res.json();
+                        setShuttleStops(data || []);
+                    }
+                } catch (e) {
+                    // ignore network errors for now; selection will fallback to manual
+                } finally {
+                    setLoadingStops(false);
+                }
+            })();
         }
     }, [open, sorted]);
 
@@ -202,13 +219,87 @@ const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
         setLocationTarget(f);
     };
 
-    const applyLocation = (coords: { x: number; y: number }) => {
-        if (locationTarget) {
-            const value = `${coords.x},${coords.y}`;
-            setValues((prev) => ({ ...prev, [locationTarget.id]: value }));
-            setErrors((prev) => ({ ...prev, [locationTarget.id]: null }));
+    const applyLocation = (
+        coords: { x: number; y: number },
+        label?: string
+    ) => {
+        if (!locationTarget) return;
+        const value = `${coords.x},${coords.y}`;
+        setValues((prev) => ({ ...prev, [locationTarget.id]: value }));
+        setErrors((prev) => ({ ...prev, [locationTarget.id]: null }));
+        if (label) {
+            setLabels((prev) => ({ ...prev, [locationTarget.id]: label }));
         }
     };
+
+    // 자동: Location 변경 시 가장 가까운 '인접 셔틀버스 승차장' 및 '거리' 계산
+    useEffect(() => {
+        const locField = sorted.find((f) => f.name === "Location");
+        if (!locField) return;
+        const locVal = values[locField.id];
+        const shuttleField = sorted.find(
+            (f) => f.name === "인접 셔틀버스 승차장"
+        );
+        const distanceField = sorted.find((f) => f.name === "거리");
+        if (!shuttleField && !distanceField) return; // nothing to update
+        if (!locVal || typeof locVal !== "string" || !locVal.includes(",")) {
+            // clear if location removed
+            const updates: Record<number, any> = {};
+            const labelUpdates: Record<number, string> = {};
+            if (shuttleField && values[shuttleField.id]) {
+                updates[shuttleField.id] = "";
+                labelUpdates[shuttleField.id] = "";
+            }
+            if (distanceField && values[distanceField.id]) {
+                updates[distanceField.id] = "";
+            }
+            if (Object.keys(updates).length)
+                setValues((p) => ({ ...p, ...updates }));
+            if (Object.keys(labelUpdates).length)
+                setLabels((p) => ({ ...p, ...labelUpdates }));
+            return;
+        }
+        if (!shuttleStops.length) return; // wait until stops loaded
+        const [xStr, yStr] = locVal.split(",");
+        const lx = parseFloat(xStr);
+        const ly = parseFloat(yStr);
+        if (isNaN(lx) || isNaN(ly)) return;
+        const R = 6371; // km
+        const toRad = (d: number) => (d * Math.PI) / 180;
+        let nearest: { stop: ShuttleStop; dist: number } | null = null;
+        for (const s of shuttleStops) {
+            const dLat = toRad(s.coords.y - ly);
+            const dLng = toRad(s.coords.x - lx);
+            const lat1 = toRad(ly);
+            const lat2 = toRad(s.coords.y);
+            const h =
+                Math.sin(dLat / 2) ** 2 +
+                Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+            const c = 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+            const dist = R * c;
+            if (!nearest || dist < nearest.dist) nearest = { stop: s, dist };
+        }
+        if (!nearest) return;
+        const valueUpdates: Record<number, any> = {};
+        const labelUpdates: Record<number, string> = {};
+        if (shuttleField) {
+            const newVal = `${nearest.stop.coords.x},${nearest.stop.coords.y}`;
+            if (values[shuttleField.id] !== newVal)
+                valueUpdates[shuttleField.id] = newVal;
+            const newLabel = nearest.stop.label || nearest.stop.name;
+            if (labels[shuttleField.id] !== newLabel)
+                labelUpdates[shuttleField.id] = newLabel;
+        }
+        if (distanceField) {
+            const distRounded = nearest.dist.toFixed(2);
+            if (values[distanceField.id] !== distRounded)
+                valueUpdates[distanceField.id] = distRounded;
+        }
+        if (Object.keys(valueUpdates).length)
+            setValues((p) => ({ ...p, ...valueUpdates }));
+        if (Object.keys(labelUpdates).length)
+            setLabels((p) => ({ ...p, ...labelUpdates }));
+    }, [values, shuttleStops, sorted, labels]);
 
     return (
         <>
@@ -259,37 +350,69 @@ const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                                     </div>
                                 ) : f.type === FieldType.LOCATION ? (
                                     <div className="flex flex-col gap-2">
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                data-field-id={f.id}
-                                                readOnly
-                                                value={value}
-                                                placeholder="x,y"
-                                                className={
-                                                    commonCls +
-                                                    " cursor-not-allowed bg-gray-50"
-                                                }
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => openLocation(f)}
-                                                className="px-2 py-2 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                                            >
-                                                좌표 선택
-                                            </button>
-                                        </div>
-                                        <input
-                                            type="text"
-                                            value={labels[f.id] || ""}
-                                            onChange={(e) =>
-                                                setLabels((prev) => ({
-                                                    ...prev,
-                                                    [f.id]: e.target.value,
-                                                }))
-                                            }
-                                            placeholder="주소 / 장소명"
-                                            className={commonCls}
-                                        />
+                                        {f.name === "인접 셔틀버스 승차장" ? (
+                                            <div className="flex flex-col gap-1">
+                                                <input
+                                                    data-field-id={f.id}
+                                                    readOnly
+                                                    value={labels[f.id] || ""}
+                                                    placeholder="Location 선택 후 자동 선택"
+                                                    className={
+                                                        commonCls +
+                                                        " cursor-not-allowed bg-gray-50"
+                                                    }
+                                                />
+                                                {loadingStops && (
+                                                    <p className="text-[11px] text-gray-400">
+                                                        셔틀 목록 로딩중...
+                                                    </p>
+                                                )}
+                                                {!loadingStops &&
+                                                    !labels[f.id] && (
+                                                        <p className="text-[11px] text-gray-500">
+                                                            위치를 먼저
+                                                            선택하세요.
+                                                        </p>
+                                                    )}
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="flex items-center gap-2">
+                                                    <input
+                                                        data-field-id={f.id}
+                                                        readOnly
+                                                        value={value}
+                                                        placeholder="x,y"
+                                                        className={
+                                                            commonCls +
+                                                            " cursor-not-allowed bg-gray-50"
+                                                        }
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            openLocation(f)
+                                                        }
+                                                        className="px-2 py-2 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                                                    >
+                                                        좌표 선택
+                                                    </button>
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    value={labels[f.id] || ""}
+                                                    onChange={(e) =>
+                                                        setLabels((prev) => ({
+                                                            ...prev,
+                                                            [f.id]:
+                                                                e.target.value,
+                                                        }))
+                                                    }
+                                                    placeholder="주소 / 장소명"
+                                                    className={commonCls}
+                                                />
+                                            </>
+                                        )}
                                     </div>
                                 ) : f.type === FieldType.DATE ? (
                                     <input
@@ -309,7 +432,18 @@ const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                                         onChange={(e) =>
                                             setValue(f, e.target.value)
                                         }
-                                        className={commonCls}
+                                        readOnly={f.name === "거리"}
+                                        className={
+                                            f.name === "거리"
+                                                ? commonCls +
+                                                  " cursor-not-allowed bg-gray-50"
+                                                : commonCls
+                                        }
+                                        placeholder={
+                                            f.name === "거리"
+                                                ? "Location 선택 후 자동 계산"
+                                                : undefined
+                                        }
                                     />
                                 ) : f.type === FieldType.URL ? (
                                     <input
@@ -367,82 +501,52 @@ const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                     )}
                 </div>
             </Modal>
-            {locationTarget && (
-                <div
-                    className="fixed inset-0 z-[1600] bg-black/40 flex items-center justify-center p-4"
-                    onClick={() => setLocationTarget(null)}
-                >
-                    <div
-                        className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-4"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <h3 className="font-semibold mb-2 text-sm">
-                            좌표 선택: {locationTarget.name}
-                        </h3>
-                        <LocationPicker
-                            value={
-                                values[locationTarget.id]
-                                    ? {
-                                          x:
-                                              Number(
-                                                  String(
-                                                      values[locationTarget.id]
-                                                  ).split(",")[0]
-                                              ) || 0,
-                                          y:
-                                              Number(
-                                                  String(
-                                                      values[locationTarget.id]
-                                                  ).split(",")[1]
-                                              ) || 0,
-                                      }
-                                    : undefined
-                            }
-                            onSelect={(coords, lbl) => {
-                                applyLocation(coords);
-                                if (lbl) {
-                                    setLabels((prev) => ({
-                                        ...prev,
-                                        [locationTarget.id]: lbl,
-                                    }));
-                                }
-                            }}
-                            height={360}
-                        />
-                        <div className="mt-3">
-                            <label className="block text-xs font-medium text-gray-600 mb-1">
-                                주소 / 레이블
-                            </label>
-                            <input
-                                type="text"
-                                value={labels[locationTarget.id] || ""}
-                                onChange={(e) =>
-                                    setLabels((prev) => ({
-                                        ...prev,
-                                        [locationTarget.id]: e.target.value,
-                                    }))
-                                }
-                                className="w-full px-3 py-2 border rounded text-sm"
-                                placeholder="예) 서울특별시 중구 ..."
-                            />
-                        </div>
-                        <div className="flex justify-end gap-2 mt-4">
-                            <button
-                                className="px-4 py-2 text-sm rounded border"
-                                onClick={() => setLocationTarget(null)}
-                            >
-                                닫기
-                            </button>
-                            <button
-                                className="px-4 py-2 text-sm rounded bg-blue-600 text-white"
-                                onClick={() => setLocationTarget(null)}
-                            >
-                                적용
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <LocationPickerModal
+                open={!!locationTarget}
+                field={locationTarget}
+                editingValue={
+                    locationTarget && values[locationTarget.id]
+                        ? (() => {
+                              const raw = String(values[locationTarget.id]);
+                              if (raw.includes(",")) {
+                                  const [x, y] = raw.split(",");
+                                  const xf = parseFloat(x);
+                                  const yf = parseFloat(y);
+                                  if (!isNaN(xf) && !isNaN(yf))
+                                      return { x: xf, y: yf };
+                              }
+                              return undefined;
+                          })()
+                        : undefined
+                }
+                editingLabel={
+                    locationTarget ? labels[locationTarget.id] || "" : ""
+                }
+                onChangeValue={(v) => {
+                    if (!locationTarget) return;
+                    if (
+                        v &&
+                        typeof v.x === "number" &&
+                        typeof v.y === "number"
+                    ) {
+                        const value = `${v.x},${v.y}`;
+                        setValues((prev) => ({
+                            ...prev,
+                            [locationTarget.id]: value,
+                        }));
+                        setErrors((prev) => ({
+                            ...prev,
+                            [locationTarget.id]: null,
+                        }));
+                    }
+                }}
+                onChangeLabel={(s) => {
+                    if (!locationTarget) return;
+                    setLabels((prev) => ({ ...prev, [locationTarget.id]: s }));
+                }}
+                onApply={() => setLocationTarget(null)}
+                onCancel={() => setLocationTarget(null)}
+            />
         </>
     );
 };

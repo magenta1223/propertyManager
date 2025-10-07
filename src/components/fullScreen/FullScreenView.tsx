@@ -159,7 +159,13 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
         currentLabel?: string
     ) => {
         const fieldMeta = allFields.find((f) => f.id === fieldId);
-        if (fieldMeta?.type === FieldType.LOCATION) {
+        // Special case: Shuttle stop location field should use dropdown instead of immediate map picker
+        const isShuttleStopField =
+            fieldMeta?.type === FieldType.LOCATION &&
+            fieldMeta.name === "인접 셔틀버스 승차장";
+
+        if (fieldMeta?.type === FieldType.LOCATION && !isShuttleStopField) {
+            // Open map picker for generic location fields
             setShowLocationPicker({ propertyId, field: fieldMeta });
             let x = "";
             let y = "";
@@ -173,10 +179,48 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
             setEditingCell(`${propertyId}:${fieldId}`);
             return;
         }
+
+        // For shuttle stop (and all non-location) inline edit without opening map
+        if (fieldMeta?.type === FieldType.LOCATION && isShuttleStopField) {
+            let x = "";
+            let y = "";
+            if (typeof currentValue === "string") {
+                const parts = currentValue.split(",");
+                x = parts[0] ?? "";
+                y = parts[1] ?? "";
+            }
+            setEditingValue({ x, y });
+            setEditingLabel(currentLabel || "");
+            setEditingCell(`${propertyId}:${fieldId}`);
+            return;
+        }
+
+        // Non-location fields
         setEditingCell(`${propertyId}:${fieldId}`);
         setEditingValue(currentValue ?? "");
-        // label == value 동기화 (요구사항 1)
         setEditingLabel(String(currentLabel ?? currentValue ?? ""));
+    };
+
+    // Explicit map picker opener (used by shuttle stop '지도 선택' button)
+    const openMapPicker = (
+        propertyId: number,
+        fieldId: number,
+        currentValue: any,
+        currentLabel?: string
+    ) => {
+        const fieldMeta = allFields.find((f) => f.id === fieldId);
+        if (!fieldMeta || fieldMeta.type !== FieldType.LOCATION) return;
+        setShowLocationPicker({ propertyId, field: fieldMeta });
+        let x = "";
+        let y = "";
+        if (typeof currentValue === "string") {
+            const parts = currentValue.split(",");
+            x = parts[0] ?? "";
+            y = parts[1] ?? "";
+        }
+        setEditingValue({ x, y });
+        setEditingLabel(currentLabel || "");
+        setEditingCell(`${propertyId}:${fieldId}`);
     };
 
     const cancelEdit = () => {
@@ -561,6 +605,7 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
                         onChangeFilter={handleChangeFilter}
                         onResetFilters={resetFilters}
                         onStartEdit={startEdit}
+                        onOpenMapPicker={openMapPicker}
                         onEditingValueChange={setEditingValue}
                         onEditingLabelChange={setEditingLabel}
                         onPersist={persistCell}
